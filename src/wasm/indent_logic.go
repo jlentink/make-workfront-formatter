@@ -74,7 +74,11 @@ func NewlineTag(state parseState) parseState {
 func closeHookTag(state parseState) parseState {
 	if state.input[state.pos] == ')' && len(state.state) > 0 && state.state[0] == "OPEN_BLOCK" {
 		state.indent -= 1
-		state.output += "\n" + indentString(state.indent) + ")\n"
+		state.output += "\n" + indentString(state.indent) + ")"
+
+		if state.pos < len(state.input)-1 && state.input[state.pos+1] != ';' {
+			state.output += "\n"
+		}
 		state.state = state.state[:len(state.state)-1]
 	} else {
 		state.output += string(state.char)
