@@ -1,0 +1,13 @@
+# Default build target
+default:
+  @just clean
+  @just build
+
+# Build the WASM file
+build:
+  cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
+  GOOS=js GOARCH=wasm go build -o main.wasm ./src/wasm/indent_logic.go ./src/wasm/main.go
+
+# Clean build artifacts
+clean:
+  rm -f wasm_exec.js main.wasm

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Make Script Formatter</title>
+</head>
+<body>
+<h2>Make/Fusion Script Formatter</h2>
+<button onclick="format()">Format</button>
+<div style="display: flex; gap: 10px;">
+  <div style="flex: 1;">
+    <div>Input</div>
+    <textarea id="input" rows="10" cols="80" style="width: 100%; height: 600px;">{{switch(1; if(sum(5; 3); "yes"; "no"); 3)}}</textarea><br>
+  </div>
+  <div style="flex: 1;">
+    <div>output</div>
+    <textarea id="output" rows="10" cols="80" style="width: 100%; height: 600px;"></textarea>
+  </div>
+</div>
+<button onclick="format()">Format</button>
+
+
+
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
+        go.run(result.instance);
+    });
+
+    function format() {
+        const input = document.getElementById("input").value;
+        const output = formatMakeScript(input);
+        document.getElementById("output").textContent = output;
+    }
+</script>
+</body>
+</html>
