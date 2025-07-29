@@ -32,6 +32,54 @@ func TestIndentMakeScript(t *testing.T) {
     3
   )
 }}`,
+		}, {
+			name:  "More complex switch with nested conditions",
+			input: "{{switch(40.value; \"Website\"; switch(39.value; 1; 1.newState.foo/1; 2; 1.newState.DE:foo/2; 3; 1.newState.DE:foo/3); \"Social\"; switch(39.value; 1; 1.newState.DE:foo/1; 2; 1.newState.DE:foo/2; 3; 1.newState.DE:foo/3); \"Media\"; switch(39.value; 1; 1.newState.DE:foo/1; 2; 1.newState.DE:foo/2; 3; 1.newState.DE:foo/3); \"Experiential\"; switch(39.value; 1; 1.newState.DE:foo/1; 2; 1.newState.DE:foo/2; 3; 1.newState.DE:foo/3))}}",
+			expected: `{{
+  switch(
+    40.value;
+    "Website";
+    switch(
+      39.value;
+      1;
+      1.newState.foo/1;
+      2;
+      1.newState.DE:foo/2;
+      3;
+      1.newState.DE:foo/3
+    );
+    "Social";
+    switch(
+      39.value;
+      1;
+      1.newState.DE:foo/1;
+      2;
+      1.newState.DE:foo/2;
+      3;
+      1.newState.DE:foo/3
+    );
+    "Media";
+    switch(
+      39.value;
+      1;
+      1.newState.DE:foo/1;
+      2;
+      1.newState.DE:foo/2;
+      3;
+      1.newState.DE:foo/3
+    );
+    "Experiential";
+    switch(
+      39.value;
+      1;
+      1.newState.DE:foo/1;
+      2;
+      1.newState.DE:foo/2;
+      3;
+      1.newState.DE:foo/3
+    )
+  )
+}}`,
 		},
 	}
 

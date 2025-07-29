@@ -11,3 +11,13 @@ build:
 # Clean build artifacts
 clean:
   rm -f wasm_exec.js main.wasm
+
+test:
+  @echo "Running tests..."
+  go test ./src/wasm/... -v
+
+preview:
+  @just build
+  @echo "Starting local server..."
+  @http-server . -c-1
+

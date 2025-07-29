@@ -1,6 +1,10 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
 
 type parseState struct {
 	char   rune
@@ -71,11 +75,57 @@ func NewlineTag(state parseState) parseState {
 	}
 	return state
 }
+
+func removePreviousLineIfEmpty(state parseState) parseState {
+	if len(state.output) > 0 && state.output[len(state.output)-1] == '\n' && state.state[0] == "OPEN_BLOCK" {
+		lines := strings.Split(state.output, "\n")
+		re := regexp.MustCompile(`^\s*$`)
+		if len(lines) > 1 && re.MatchString(lines[len(lines)-1]) {
+			test := lines[:len(lines)-1]
+			state.output = strings.Join(lines[:len(lines)-1], "\n")
+			fmt.Println(test)
+		}
+	}
+	return state
+}
+
+func stripWhiteSpace(state parseState) parseState {
+	if state.state[0] == "OPEN_BLOCK" {
+		if state.state[len(state.state)-1] == "IN_BLOCK_TICK" || state.state[len(state.state)-1] == "IN_BLOCK_DOUBLE_QUOTE" {
+			state.output += string(state.char)
+		}
+	} else {
+		state.output += string(state.char)
+	}
+	return state
+}
+
+func inBlock(state parseState) parseState {
+	if state.state[0] == "OPEN_BLOCK" {
+		if state.char == '`' {
+			if state.state[len(state.state)-1] == "IN_BLOCK_TICK" {
+				state.state = state.state[:len(state.state)-1]
+			} else {
+				state.state = append(state.state, "IN_BLOCK_TICK")
+			}
+		}
+		if state.char == '"' {
+			if state.state[len(state.state)-1] == "IN_BLOCK_DOUBLE_QUOTE" {
+				state.state = state.state[:len(state.state)-1]
+			} else {
+				state.state = append(state.state, "IN_BLOCK_DOUBLE_QUOTE")
+			}
+		}
+		state.output += string(state.char)
+	}
+	return state
+}
+
 func closeHookTag(state parseState) parseState {
 	if state.input[state.pos] == ')' && len(state.state) > 0 && state.state[0] == "OPEN_BLOCK" {
+		state = removePreviousLineIfEmpty(state)
 		state.indent -= 1
 		state.output += "\n" + indentString(state.indent) + ")"
-
 		if state.pos < len(state.input)-1 && state.input[state.pos+1] != ';' {
 			state.output += "\n"
 		}
@@ -139,6 +189,10 @@ func IndentMakeScript(input string) string {
 			lineState = dotCommaTag(lineState)
 		case '\n':
 			lineState = NewlineTag(lineState)
+		case '`', '"':
+			lineState = inBlock(lineState)
+		case ' ':
+			lineState = stripWhiteSpace(lineState)
 		default:
 			executed := false
 			if len(lineState.state) > 0 && lineState.state[0] == "OPEN_BLOCK" {
