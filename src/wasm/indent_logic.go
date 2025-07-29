@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -81,9 +80,7 @@ func removePreviousLineIfEmpty(state parseState) parseState {
 		lines := strings.Split(state.output, "\n")
 		re := regexp.MustCompile(`^\s*$`)
 		if len(lines) > 1 && re.MatchString(lines[len(lines)-1]) {
-			test := lines[:len(lines)-1]
 			state.output = strings.Join(lines[:len(lines)-1], "\n")
-			fmt.Println(test)
 		}
 	}
 	return state

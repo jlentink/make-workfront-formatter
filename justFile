@@ -6,7 +6,8 @@ default:
 # Build the WASM file
 build:
   cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
-  GOOS=js GOARCH=wasm go build -o main.wasm ./src/wasm/indent_logic.go ./src/wasm/main.go
+  GOOS=js GOARCH=wasm go build -o main.wasm -ldflags="-s -w" ./src/wasm/
+
 
 # Clean build artifacts
 clean:
@@ -20,4 +21,11 @@ preview:
   @just build
   @echo "Starting local server..."
   @http-server . -c-1
+
+deploy:
+  @just test
+  @just build
+  @echo "Deploying to GitHub Pages..."
+  aicommit
+  git push origin main
 
