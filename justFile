@@ -17,7 +17,7 @@ clean:
 
 test:
   @echo "Running tests with TinyGo..."
-  tinygo test ./src/wasm/... -v
+  go test ./src/wasm/... -v
 
 preview:
   @just build
