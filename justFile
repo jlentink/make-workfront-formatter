@@ -3,10 +3,12 @@ default:
   @just clean
   @just build
 
-# Build the WASM file
+# Build the WASM file with TinyGo
 build:
-  cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
-  GOOS=js GOARCH=wasm go build -o main.wasm -ldflags="-s -w" ./src/wasm/
+  @echo "Building with TinyGo..."
+  tinygo build -o main.wasm -target wasm ./src/wasm/
+  @echo "Copying TinyGo wasm_exec.js..."
+  cp "$(tinygo env TINYGOROOT)/targets/wasm_exec.js" .
 
 
 # Clean build artifacts
@@ -14,8 +16,8 @@ clean:
   rm -f wasm_exec.js main.wasm
 
 test:
-  @echo "Running tests..."
-  go test ./src/wasm/... -v
+  @echo "Running tests with TinyGo..."
+  tinygo test ./src/wasm/... -v
 
 preview:
   @just build
