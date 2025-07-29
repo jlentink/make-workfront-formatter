@@ -90,7 +90,7 @@ func removePreviousLineIfEmpty(state parseState) parseState {
 }
 
 func stripWhiteSpace(state parseState) parseState {
-	if state.state[0] == "OPEN_BLOCK" {
+	if len(state.state) > 1 && state.state[0] == "OPEN_BLOCK" {
 		if state.state[len(state.state)-1] == "IN_BLOCK_TICK" || state.state[len(state.state)-1] == "IN_BLOCK_DOUBLE_QUOTE" {
 			state.output += string(state.char)
 		}
@@ -176,6 +176,7 @@ func IndentMakeScript(input string) string {
 		indent: 0,
 		state:  []string{},
 	}
+
 	for lineState.pos = 0; lineState.pos < len(lineState.runes); lineState.pos++ {
 		lineState.char = lineState.runes[lineState.pos]
 		switch lineState.char {

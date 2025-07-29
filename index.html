@@ -33,6 +33,17 @@
         const output = formatMakeScript(input);
         document.getElementById("output").value = output;
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("input").onkeyup = function () {
+            console.log("Input changed");
+            const input = document.getElementById("input").value;
+            if (!input.trim()) return;
+            const output = formatMakeScript(input);
+            document.getElementById("output").value = output;
+        };
+    });
+
 </script>
 </body>
 </html>
